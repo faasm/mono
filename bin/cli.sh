@@ -11,11 +11,6 @@ export FAASM_VERSION=$(cat faasm/VERSION)
 export CPP_VERSION=$(cat cpp/VERSION)
 export PYTHON_VERSION=$(cat python/VERSION)
 
-# Tolerate differences in naming while updating repos
-export FAASM_CLI_IMAGE=${CLI_IMAGE}
-export CPP_CLI_IMAGE=${SYSROOT_CLI_IMAGE}
-export PYTHON_CLI_IMAGE=${CPYTHON_CLI_IMAGE}
-
 if [[ -z "$FAABRIC_CLI_IMAGE" ]]; then
     export FAABRIC_CLI_IMAGE=faasm/faabric:${FAABRIC_VERSION}
 fi
