@@ -1,0 +1,9 @@
+[submodule "faasm"]
+	path = faasm
+	url = https://github.com/faasm/faasm
+[submodule "python"]
+	path = python
+	url = https://github.com/faasm/python
+[submodule "cpp"]
+	path = cpp
+	url = https://github.com/faasm/cpp

@@ -1,0 +1,62 @@
+version: "3"
+
+services:
+  redis:
+    image: faasm/redis:${FAASM_VERSION}
+
+  faasm-cli:
+    image: ${FAASM_CLI_IMAGE}
+    working_dir: /usr/local/code/faasm
+    stdin_open: true
+    tty: true
+    privileged: true
+    depends_on:
+      - redis
+    environment:
+      - LOG_LEVEL=debug
+      - REDIS_QUEUE_HOST=redis
+      - REDIS_STATE_HOST=redis
+      - LD_LIBRARY_PATH=/build/faasm/third-party/lib:/usr/local/lib
+    volumes:
+      - ./faasm:/usr/local/code/faasm/
+      - ./faasm/build:/build/faasm/
+      - ./faasm-local:/usr/local/faasm
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /usr/bin/docker:/usr/bin/docker
+
+  cpp-cli:
+    image: ${SYSROOT_CLI_IMAGE}
+    working_dir: /code/faasm-toolchain
+    stdin_open: true
+    tty: true
+    privileged: true
+    depends_on:
+      - redis
+    environment:
+      - LOG_LEVEL=debug
+      - REDIS_STATE_HOST=redis
+      - REDIS_QUEUE_HOST=redis
+    volumes:
+      - ./cpp:/code/faasm-toolchain
+      - ./cpp/build:/build/faasm-toolchain
+      - ./faasm-local:/usr/local/faasm
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /usr/bin/docker:/usr/bin/docker
+
+  python-cli:
+    image: ${CPYTHON_CLI_IMAGE}
+    working_dir: /code/faasm-cpython
+    stdin_open: true
+    tty: true
+    privileged: true
+    depends_on:
+      - redis
+    environment:
+      - LOG_LEVEL=debug
+      - REDIS_STATE_HOST=redis
+      - REDIS_QUEUE_HOST=redis
+    volumes:
+      - ./python:/code/faasm-cpython
+      - ./faasm-local:/usr/local/faasm
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /usr/bin/docker:/usr/bin/docker
