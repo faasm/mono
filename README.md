@@ -68,3 +68,133 @@ want to work on:
 # Faabric
 ./bin/cli.sh faabric
 ```
+
+# Faasm Development
+
+To build and run the tests, you can then run the following:
+
+```bash
+# --- CPP CLI ---
+# Build CPP functions required for the tests
+inv compile.local
+
+# --- Python CLI ---
+# Build Python wrapper function
+inv func
+
+# Upload the Python functions
+inv upload --local
+
+# --- Faasm CLI ---
+# Build the development tools
+inv dev.tools
+
+# Run codegen (this may take a while the first time it's run)
+inv codegen.local
+inv python.codegen
+
+# Set up cgroup
+./bin/cgroup.sh
+
+# Run the tests
+tests
+```
+
+## Running a local Faasm development cluster
+
+You should be able to do the majority of development with the set-up detailed
+above, however, to set up a local development cluster you can run:
+
+```
+# --- Faasm CLI ---
+# Build the code
+inv dev.tools
+```
+
+Then, outside the container:
+
+```
+# Mount your local build inside the containers
+export FAASM_BUILD_MOUNT=/build/faasm
+
+# Start up the local cluster
+cd faasm
+docker-compose up -d
+```
+
+This will mount the built binaries from the CLI container into the other 
+containers, thus allowing you to rebuild and restart everything with local 
+changes. 
+
+For example, if you have changed code and want to restart the worker container:
+
+```
+# Inside the CLI container, rebuild the pool runner (executed by the worker)
+inv dev.cc pool_runner
+
+# Outside the container, restart the worker
+docker-compose restart worker
+
+# Tail the logs
+docker-compose logs -f
+```
+
+## Tooling - editors, IDEs etc.
+
+You can use custom containers that inherit from the existing CLI images if you
+want to add text editors etc. 
+
+Before running the `./bin/cli.sh` script, you need to set one or more of the
+following environment variables:
+
+```bash
+# Faasm
+FAASM_CLI_IMAGE
+
+# Faabric
+FAABRIC_CLI_IMAGE
+
+# CPP
+CPP_CLI_IMAGE
+
+# Python
+PYTHON_CLI_IMAGE
+```
+
+## Testing
+
+We use [Catch2](https://github.com/catchorg/Catch2) for testing and your life 
+will be much easier if you're familiar with their [command line
+docs](https://github.com/catchorg/Catch2/blob/v2.x/docs/command-line.md).  This
+means you can do things like:
+
+```
+# Run all the MPI tests
+tests "[mpi]"
+
+# Run a specific test
+tests "Test some feature"
+```
+
+## Building outside of the container
+
+If you want to build projects outside of the recommended containers, or just
+run some of the CLI tasks, you can take a look at the [CLI
+Dockerfile](../docker/cli.dockerfile) to see what's required:
+
+To run the CLI, you should just need to do:
+
+```bash
+# Set up the venv
+./bin/create_venv.sh
+
+# Activate the virtualenv
+source venv/bin/activate
+
+# Check things work
+cd faasm inv -r faasmcli/faasmcli -l
+
+cd ../cpp inv -l
+
+cd ../python inv -l
+```
