@@ -46,7 +46,7 @@ services:
 
   cpp-cli:
     image: ${CPP_CLI_IMAGE}
-    working_dir: /code/faasm-toolchain
+    working_dir: /code/cpp
     stdin_open: true
     tty: true
     privileged: true
@@ -57,15 +57,15 @@ services:
       - REDIS_STATE_HOST=redis
       - REDIS_QUEUE_HOST=redis
     volumes:
-      - ./cpp:/code/faasm-toolchain
-      - ./cpp/build:/build/faasm-toolchain
+      - ./cpp:/code/cpp
+      - ./cpp/build:/build/cpp
       - ./faasm-local:/usr/local/faasm
       - /var/run/docker.sock:/var/run/docker.sock
       - /usr/bin/docker:/usr/bin/docker
 
   python-cli:
     image: ${PYTHON_CLI_IMAGE}
-    working_dir: /code/faasm-cpython
+    working_dir: /code/python
     stdin_open: true
     tty: true
     privileged: true
@@ -76,7 +76,7 @@ services:
       - REDIS_STATE_HOST=redis
       - REDIS_QUEUE_HOST=redis
     volumes:
-      - ./python:/code/faasm-cpython
+      - ./python:/code/python
       - ./faasm-local:/usr/local/faasm
       - /var/run/docker.sock:/var/run/docker.sock
       - /usr/bin/docker:/usr/bin/docker
